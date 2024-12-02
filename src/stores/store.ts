@@ -1,16 +1,15 @@
 // stores/counter.js
+import type { ITicket } from '@/views/BoardView.vue';
 import { defineStore } from 'pinia';
 import { ref, type Ref } from 'vue';
 
 export const useGlobalStore = defineStore('global', {
     state: () => {
         return {
-            tickets: [],
-            columns: ref([]) as Ref<string[]>,
+            tickets: ref<Record<string, ITicket[]>>({}),
+            columns: ref<string[]>([]),
         };
     },
-    // could also be defined as
-    // state: () => ({ count: 0 })
     actions: {
         async getColumns() {
             const response = await fetch('http://localhost:5246/api/Status');
@@ -19,7 +18,15 @@ export const useGlobalStore = defineStore('global', {
 
         async getTickets() {
             const response = await fetch('http://localhost:5246/api/Ticket');
-            this.tickets = await response.json();
+            const tickets: ITicket[] = await response.json();
+
+            this.tickets = this.columns.reduce(
+                (acc, column) => {
+                    acc[column] = tickets.filter((ticket) => ticket.list === column);
+                    return acc;
+                },
+                {} as Record<string, ITicket[]>,
+            );
         },
 
         async addTask(title: string, description: string) {
