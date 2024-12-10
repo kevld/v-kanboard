@@ -6,6 +6,7 @@ import { Pie } from 'vue-chartjs';
 import type { ITicket } from '@/interfaces/ITicket';
 import TicketCard from '@/components/cards/TicketCard.vue';
 import AddTicket from '@/components/buttons/AddTicket.vue';
+import Signalr from '@/components/rt/signalr.vue';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -41,7 +42,7 @@ async function setData(): Promise<void> {
         labels: ['TO DO', 'Doing', 'Done'],
         datasets: [
             {
-                backgroundColor: ['#41B883', '#E46651', '#00D8FF'],
+                backgroundColor: ['#0d6efd', '#dc3545', '#198754'],
                 data: [
                     tickets.filter((x) => x.list == 'TO DO').length,
                     tickets.filter((x) => x.list == 'Doing').length,
@@ -58,7 +59,7 @@ async function setData(): Promise<void> {
         <div class="col-md-6">
             <div v-if="!itemsToDisplay.length">No tasks</div>
             <div v-else>
-                <span>Last three created tasks:</span>
+                <h3>Last three created tasks:</h3>
                 <TicketCard
                     v-for="item in itemsToDisplay"
                     :key="item.id"
@@ -72,7 +73,13 @@ async function setData(): Promise<void> {
         </div>
         <div class="col-md-6">
             <div v-if="allItems.length">
-                <Pie :data="data" :options="options" />
+                <h3>Distribution of tasks</h3>
+                <div>
+                    <Pie :data="data" :options="options" />
+                </div>
+            </div>
+            <div>
+                <Signalr />
             </div>
         </div>
     </div>

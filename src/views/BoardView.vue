@@ -6,6 +6,7 @@ import draggable from 'vuedraggable';
 import TicketCard from '@/components/cards/TicketCard.vue';
 import { useGlobalStore } from '@/stores/store';
 import AddTicket from '@/components/buttons/AddTicket.vue';
+import Swal from 'sweetalert2';
 
 const store = useGlobalStore();
 
@@ -28,9 +29,23 @@ async function onAdd(event: any) {
 }
 
 async function deleteTicket(ticketId: number) {
-    await store.deleteTicket(ticketId);
+    await Swal.fire({
+        title: 'Delete this item ?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'Cancel',
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            await store.deleteTicket(ticketId);
+            await store.getTickets();
 
-    await store.getTickets();
+            Swal.fire({
+                title: 'Item deleted',
+                icon: 'success',
+            });
+        }
+    });
 }
 </script>
 
